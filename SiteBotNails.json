@@ -1,0 +1,127 @@
+{
+  "name": "SiteBotNails",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        -240
+      ],
+      "id": "6dfdcd1c-d04f-486b-ad2f-d579491bdc73",
+      "name": "Webhook",
+      "webhookId": "5f2afdc9-e864-4db8-9d0a-4b9288a01419"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "SYSTEM PROMPT:\n\nTu es Lola, l'assistante virtuelle du salon Ongles & Glam.\n\nINFORMATIONS OFFICIELLES DU SALON:\n- Adresse: 12 Rue des Paillettes, 75011 Paris\n- Horaires: Mardi au Samedi de 10h à 19h. Fermé Dimanche et Lundi.\n- Réservation: Uniquement sur www.ongles-and-glam.fr\n- Tarifs: Pose gel (50€), Remplissage (35€), Dépose+Soin (20€), Nail art (+10€ à +25€).\n- Règles: Annulation 24h avant max. Retard > 15 min = rendez-vous annulé.\n\nCONSIGNES DE RÉPONSE STRICTES:\n1. Réponses ultra-short: Donne uniquement l'information brute. Maximum 10 mots par réponse.\n2. Interdiction: Pas de salutations (bonjour, coucou), pas de politesse, pas de phrases de transition.\n3. Style: Direct, factuel, efficace.\n\nRÈGLE DE SÉCURITÉ:\nPour toute question hors du sujet du salon, des ongles, des tarifs ou des horaires, réponds EXACTEMENT et UNIQUEMENT la phrase suivante:\n\"Je réponds uniquement aux questions sur nos prestations ongles.\"\nAttention tu ne dois donner que les information qu'on te demande rien d'autre"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        -240
+      ],
+      "id": "798c688d-5517-4688-8baa-a1f9162a213b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "mistral:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        432,
+        32
+      ],
+      "id": "b6a25080-66d0-4036-9805-be2ded46c594",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "2Aj2FydRBBREUShJ",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { answer: $json.output } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1120,
+        -240
+      ],
+      "id": "6ae6f6c1-6f6e-45a0-9384-aaae8fa3127d",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "cd8fc8f4-27b8-4c64-940d-1735090ee2fe",
+  "meta": {
+    "templateId": "2462",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5e53e94e5bda621af74eac7d67eb5a1147d8097a7710fc42a326d87c710490aa"
+  },
+  "nodeGroups": [],
+  "id": "QD6FucPrGAvsC2sA",
+  "tags": []
+}
